@@ -13,7 +13,10 @@
 namespace app {
     void MainController::initialize() {
         spdlog::info("Kontroler inicijalizovan");
+        auto graphics = engine::graphics::GraphicsController::get<engine::graphics::GraphicsController>();
+        auto camera = graphics->camera();
         engine::graphics::OpenGL::enable_depth_testing();
+        camera->Position = glm::vec3(1.5f, 0.5f, 4.0f);
     }
 
     bool MainController::loop() {
