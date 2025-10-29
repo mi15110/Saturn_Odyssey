@@ -14,6 +14,10 @@ namespace app {
 
         void draw_saturn();
 
+        void update_camera();
+
+        void update() override;
+
         void begin_draw() override;
 
         void end_draw() override;
