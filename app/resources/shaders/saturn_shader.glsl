@@ -54,7 +54,7 @@ void main()
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 reflectDir = reflect(-dirLightDir, norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
-    vec3 specular = vec3(0.4) * spec;
+    vec3 specular = vec3(1.0, 0.93, 0.75) * spec;
 
 
     vec3 result = ambient + diffuseDir + specular;

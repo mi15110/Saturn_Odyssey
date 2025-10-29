@@ -2,17 +2,21 @@
   "resources": {
     "models": {
       "saturn": {
-        "path": "saturn/saturn.obj"
+        "path": "saturn.obj"
+      },
+      "sun": {
+        "path": "sun.obj"
       }
     },
     "textures": [
       "saturn.jpg",
-      "saturn_ring_2.jpg"
+      "saturn_ring_2.jpg",
+      "sun.jpg"
     ]
   },
   "window": {
-    "height": 1000,
-    "title": "Hello, window!",
-    "width": 800
+    "height": 1800,
+    "title": "Saturn Odyssey",
+    "width": 1600
   }
 }

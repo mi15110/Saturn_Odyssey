@@ -6,13 +6,19 @@
 #define MAINCONTROLLER_HPP
 #include <engine/core/Controller.hpp>
 
+#include "glm/vec3.hpp"
+
 namespace app {
+    inline glm::vec3 m_sunPos{4.5f, 2.0f, -3.0f};
+
     class MainController : public engine::core::Controller {
         void initialize() override;
 
         bool loop() override;
 
         void draw_saturn();
+
+        void draw_sun();
 
         void update_camera();
 
