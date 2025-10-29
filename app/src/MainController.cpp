@@ -29,7 +29,8 @@ namespace app {
         platform->register_platform_event_observer(std::make_unique<MainPlatformEventObserver>());
 
         engine::graphics::OpenGL::enable_depth_testing();
-        camera->Position = glm::vec3(1.5f, 0.5f, 4.0f);
+        camera->Position = glm::vec3(0.0f, 0.3f, 8.0f);
+        camera->Front = glm::normalize(glm::vec3(0.0f, 0.0f, -5.0f) - camera->Position);
     }
 
     bool MainController::loop() {
@@ -46,17 +47,14 @@ namespace app {
 
         engine::resources::Model *saturn = resources->model("saturn");
         engine::resources::Shader *shader = resources->shader("saturn_shader");
-
         shader->use();
 
         shader->set_mat4("projection", graphics->projection_matrix());
-        shader->set_mat4("view", camera->view_matrix());
+        shader->set_mat4("view", camera->view_matrix());;
 
         glm::mat4 modelSat = glm::mat4(1.0f);
-        modelSat = glm::translate(modelSat, glm::vec3(0.0f, -0.1f, -4));
-        modelSat = glm::scale(modelSat, glm::vec3(1.2f));
-
-
+        modelSat = glm::translate(modelSat, glm::vec3(0.0f, -0.2f, -5.0f));
+        modelSat = glm::scale(modelSat, glm::vec3(1.5f));
         shader->set_mat4("model", modelSat);
 
         resources->texture("saturn")->bind(GL_TEXTURE0);
@@ -76,11 +74,11 @@ namespace app {
         engine::resources::Model *sun = resources->model("sun");
         engine::resources::Shader *shader = resources->shader("sun_shader");
 
-        m_sunPos = glm::vec3(2.5f, 0.8f, -0.6f);
+        m_sunPos = glm::vec3(2.8f, 0.8f, -0.6f);
 
         glm::mat4 modelSun = glm::mat4(1.0f);
         modelSun = glm::translate(modelSun, m_sunPos);
-        modelSun = glm::scale(modelSun, glm::vec3(0.3f));
+        modelSun = glm::scale(modelSun, glm::vec3(0.4f));
 
         shader->use();
         shader->set_mat4("projection", graphics->projection_matrix());
