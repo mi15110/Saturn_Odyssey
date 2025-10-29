@@ -93,6 +93,14 @@ namespace app {
         sun->draw(shader);
     }
 
+    void MainController::draw_skybox() {
+        auto resources = engine::core::Controller::get<engine::resources::ResourcesController>();
+        auto skybox = resources->skybox("skybox");
+        auto shader = resources->shader("skybox_shader");
+        auto graphics = engine::graphics::GraphicsController::get<engine::graphics::GraphicsController>();
+        graphics->draw_skybox(shader, skybox);
+    }
+
 
     void MainController::update_camera() {
         auto platform = engine::core::Controller::get<engine::platform::PlatformController>();
@@ -133,5 +141,6 @@ namespace app {
     void MainController::draw() {
         draw_saturn();
         draw_sun();
+        draw_skybox();
     }
 }

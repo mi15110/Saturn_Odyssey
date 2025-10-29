@@ -20,6 +20,8 @@ namespace app {
 
         void draw_sun();
 
+        void draw_skybox();
+
         void update_camera();
 
         void update() override;
