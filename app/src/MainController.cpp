@@ -3,6 +3,7 @@
 //
 #include <MainController.hpp>
 #include <engine/platform/PlatformController.hpp>
+#include <GL/gl.h>
 #include <spdlog/spdlog.h>
 
 #include "engine/graphics/GraphicsController.hpp"
@@ -26,14 +27,18 @@ namespace app {
         auto resources = engine::core::Controller::get<engine::resources::ResourcesController>();
         auto graphics = engine::graphics::GraphicsController::get<engine::graphics::GraphicsController>();
         engine::resources::Model *saturn = resources->model("saturn");
-        engine::resources::Shader *shader = resources->shader("basic");
+        engine::resources::Shader *shader = resources->shader("saturn_shader");
         glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f));
 
         shader->use();
         shader->set_mat4("projection", graphics->projection_matrix());
         shader->set_mat4("view", graphics->camera()->view_matrix());
-        shader->set_mat4("model", model);
 
+        auto texture = resources->texture("saturn");
+        texture->bind(GL_TEXTURE0);
+        shader->set_int("texture_sphere", 0);
+        shader->set_mat4("model", model);
+        shader->set_vec3("lightDirection", glm::normalize(glm::vec3(-0.3f, -1.0f, -0.2f)));
         saturn->draw(shader);
     }
 
