@@ -11,10 +11,23 @@
 #include "engine/resources/ResourcesController.hpp"
 
 namespace app {
+    class MainPlatformEventObserver : public engine::platform::PlatformEventObserver {
+    public:
+        void on_mouse_move(engine::platform::MousePosition position) override;
+    };
+
+    void MainPlatformEventObserver::on_mouse_move(engine::platform::MousePosition position) {
+        auto camera = engine::core::Controller::get<engine::graphics::GraphicsController>()->camera();
+        camera->rotate_camera(position.dx, position.dy);
+    }
+
     void MainController::initialize() {
         spdlog::info("Kontroler inicijalizovan");
         auto graphics = engine::graphics::GraphicsController::get<engine::graphics::GraphicsController>();
         auto camera = graphics->camera();
+        auto platform = engine::core::Controller::get<engine::platform::PlatformController>();
+        platform->register_platform_event_observer(std::make_unique<MainPlatformEventObserver>());
+
         engine::graphics::OpenGL::enable_depth_testing();
         camera->Position = glm::vec3(1.5f, 0.5f, 4.0f);
     }
@@ -55,71 +68,70 @@ namespace app {
         shader->set_vec3("lightColor", glm::vec3(1.0f, 0.95f, 0.85f));
         saturn->draw(shader);
     }
-}
 
-void app::MainController::draw_sun() {
-    auto resources = engine::core::Controller::get<engine::resources::ResourcesController>();
-    auto graphics = engine::core::Controller::get<engine::graphics::GraphicsController>();
+    void MainController::draw_sun() {
+        auto resources = engine::core::Controller::get<engine::resources::ResourcesController>();
+        auto graphics = engine::core::Controller::get<engine::graphics::GraphicsController>();
 
-    engine::resources::Model *sun = resources->model("sun");
-    engine::resources::Shader *shader = resources->shader("sun_shader");
+        engine::resources::Model *sun = resources->model("sun");
+        engine::resources::Shader *shader = resources->shader("sun_shader");
 
-    m_sunPos = glm::vec3(2.5f, 0.8f, -0.6f);
+        m_sunPos = glm::vec3(2.5f, 0.8f, -0.6f);
 
-    glm::mat4 modelSun = glm::mat4(1.0f);
-    modelSun = glm::translate(modelSun, m_sunPos);
-    modelSun = glm::scale(modelSun, glm::vec3(0.3f));
+        glm::mat4 modelSun = glm::mat4(1.0f);
+        modelSun = glm::translate(modelSun, m_sunPos);
+        modelSun = glm::scale(modelSun, glm::vec3(0.3f));
 
-    shader->use();
-    shader->set_mat4("projection", graphics->projection_matrix());
-    shader->set_mat4("view", graphics->camera()->view_matrix());
-    shader->set_mat4("model", modelSun);
+        shader->use();
+        shader->set_mat4("projection", graphics->projection_matrix());
+        shader->set_mat4("view", graphics->camera()->view_matrix());
+        shader->set_mat4("model", modelSun);
 
-    resources->texture("sun")->bind(GL_TEXTURE0);
-    shader->set_int("texture_sun", 0);
+        resources->texture("sun")->bind(GL_TEXTURE0);
+        shader->set_int("texture_sun", 0);
 
-    sun->draw(shader);
-}
-
-
-void app::MainController::update_camera() {
-    auto platform = engine::core::Controller::get<engine::platform::PlatformController>();
-    auto graphics = engine::graphics::GraphicsController::get<engine::graphics::GraphicsController>();
-    auto camera = graphics->camera();
-    float dt = platform->dt();
-
-    if (platform->key(engine::platform::KeyId::KEY_W).is_down()) {
-        camera->move_camera(engine::graphics::Camera::Movement::FORWARD, dt);
+        sun->draw(shader);
     }
 
-    if (platform->key(engine::platform::KeyId::KEY_S).is_down()) {
-        camera->move_camera(engine::graphics::Camera::Movement::BACKWARD, dt);
+
+    void MainController::update_camera() {
+        auto platform = engine::core::Controller::get<engine::platform::PlatformController>();
+        auto graphics = engine::graphics::GraphicsController::get<engine::graphics::GraphicsController>();
+        auto camera = graphics->camera();
+        float dt = platform->dt();
+
+        if (platform->key(engine::platform::KeyId::KEY_W).is_down()) {
+            camera->move_camera(engine::graphics::Camera::Movement::FORWARD, dt);
+        }
+
+        if (platform->key(engine::platform::KeyId::KEY_S).is_down()) {
+            camera->move_camera(engine::graphics::Camera::Movement::BACKWARD, dt);
+        }
+
+        if (platform->key(engine::platform::KeyId::KEY_A).is_down()) {
+            camera->move_camera(engine::graphics::Camera::Movement::LEFT, dt);
+        }
+
+        if (platform->key(engine::platform::KeyId::KEY_D).is_down()) {
+            camera->move_camera(engine::graphics::Camera::Movement::RIGHT, dt);
+        }
     }
 
-    if (platform->key(engine::platform::KeyId::KEY_A).is_down()) {
-        camera->move_camera(engine::graphics::Camera::Movement::LEFT, dt);
+    void MainController::update() {
+        update_camera();
     }
 
-    if (platform->key(engine::platform::KeyId::KEY_D).is_down()) {
-        camera->move_camera(engine::graphics::Camera::Movement::RIGHT, dt);
+    void MainController::begin_draw() {
+        engine::graphics::OpenGL::clear_buffers();
+    }
+
+    void MainController::end_draw() {
+        auto platform = engine::core::Controller::get<engine::platform::PlatformController>();
+        platform->swap_buffers();
+    }
+
+    void MainController::draw() {
+        draw_saturn();
+        draw_sun();
     }
 }
-
-void app::MainController::update() {
-    update_camera();
-}
-
-void app::MainController::begin_draw() {
-    engine::graphics::OpenGL::clear_buffers();
-}
-
-void app::MainController::end_draw() {
-    auto platform = engine::core::Controller::get<engine::platform::PlatformController>();
-    platform->swap_buffers();
-}
-
-void app::MainController::draw() {
-    draw_saturn();
-    draw_sun();
-}
-
